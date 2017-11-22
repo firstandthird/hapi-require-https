@@ -1,21 +1,21 @@
 'use strict'
+const register = async (server, options) => {
 
-exports.register = function (server, options, next) {
-  server.ext('onRequest', function (request, reply) {
-    var redirect = options.proxy !== false
-      ? request.headers['x-forwarded-proto'] === 'http'
-      : request.connection.info.protocol === 'http'
+  // server.ext('onRequest', async function (request, h) {
+  //   var redirect = options.proxy !== false ? request.headers['x-forwarded-proto'] === 'http' : request.connection.info.protocol === 'http';
+  //
+  //   if (redirect) {
+  //     return h
+  //       .redirect('https://' + request.headers.host + request.url.path)
+  //       .code(301);
+  //   }
+  //   return h.continue;
+  // });
+  // return Promise.resolve();
+};
 
-    if (redirect) {
-      return reply()
-        .redirect('https://' + request.headers.host + request.url.path)
-        .code(301)
-    }
-    reply.continue()
-  })
-  next()
-}
-
-exports.register.attributes = {
+exports.plugin = {
+  register,
+  once: true,
   pkg: require('./package.json')
-}
+};
