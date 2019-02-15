@@ -3,23 +3,23 @@
 var test = require('tape')
 var hapi = require('hapi')
 var http = require('http')
-var plugin = require('./')
+var plugin = require('./index.js')
 
-test('proxied requests', function (t) {
+test('proxied requests', async (t) => {
   t.plan(2)
 
-  Server().inject({
+  const server = await Server();
+  const response = await server.inject({
     url: '/',
     headers: {
       host: 'host',
       'x-forwarded-proto': 'http'
     }
-  }, function (response) {
-    t.equal(response.statusCode, 301, 'sets 301 code')
-    t.equal(response.headers.location, 'https://host/', 'sets Location header')
-  })
-})
-
+  });
+  t.equal(response.statusCode, 301, 'sets 301 code')
+  t.equal(response.headers.location, 'https://host/', 'sets Location header')
+});
+/*
 test('un-proxied requests: options = {proxy: false}', function (t) {
   t.plan(2)
 
@@ -112,21 +112,16 @@ test('x-forward-host support', function (t) {
     t.equal(response.headers.location, 'https://host2/', 'sets Location header')
   })
 })
-
-function Server (options) {
-  var server = new hapi.Server()
-  server.connection()
-  server.register({register: plugin, options: options}, throwErr)
+*/
+const Server = async (options) => {
+  var server = new hapi.Server();
+  await server.register(plugin, options);
   server.route({
     method: 'GET',
     path: '/',
-    handler: function (request, reply) {
-      reply('Hello!')
+    handler: function (request, h) {
+      return 'Hello';
     }
   })
-  return server
-}
-
-function throwErr (err) {
-  if (err) throw err
+  return server;
 }
