@@ -1,16 +1,22 @@
 'use strict'
 
-const register = function (server, options) {
-  server.ext('onRequest', function (request, h) {
-    var redirect = options.proxy !== false
+const defaults = {
+  proxy: true
+};
+
+const register = function (server, pluginOptions) {
+  const options = Object.assign({}, defaults, pluginOptions);
+  server.ext('onRequest', (request, h) => {
+    const redirect = options.proxy !== false
       ? request.headers['x-forwarded-proto'] === 'http'
-      : request.connection.info.protocol === 'http'
-    var host = request.headers['x-forwarded-host'] || request.headers.host
+      : server.info.protocol === 'http';
+    const host = request.headers['x-forwarded-host'] || request.headers.host;
 
     if (redirect) {
-      return response()
+      return h
         .redirect('https://' + host + request.url.path)
         .code(301)
+        .takeover();
     }
     return h.continue;
   })
