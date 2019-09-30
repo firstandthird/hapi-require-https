@@ -14,7 +14,7 @@ const register = function (server, pluginOptions) {
 
     if (redirect) {
       return h
-        .redirect('https://' + host + request.url.path)
+        .redirect('https://' + host + request.url.pathname + request.url.search)
         .code(301)
         .takeover();
     }
