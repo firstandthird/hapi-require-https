@@ -1,7 +1,7 @@
 'use strict'
 
 var test = require('tape')
-var hapi = require('hapi')
+var hapi = require('@hapi/hapi')
 var http = require('http')
 var plugin = require('./index.js')
 
